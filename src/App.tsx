@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  Beer,
   Plus,
   ReceiptText,
-  Scale,
   Share2,
   Trash2,
   Users,
@@ -261,7 +261,7 @@ export default function App() {
         <header className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-slate-900 text-white">
-              <Scale className="h-5 w-5" />
+              <Beer className="h-5 w-5" />
             </div>
             <div className="leading-tight">
               <div className="text-base font-semibold">Churrasteio</div>
@@ -292,7 +292,7 @@ export default function App() {
             variant={tab === 'settlement' ? 'default' : 'secondary'}
             onClick={() => setTab('settlement')}
           >
-            <Scale className="h-4 w-4" />
+            <Beer className="h-4 w-4" />
             Acerto
           </Button>
         </nav>
