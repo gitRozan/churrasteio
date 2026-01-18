@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Plus,
   ReceiptText,
@@ -14,6 +14,7 @@ import { Input } from './components/ui/input'
 import { Label } from './components/ui/label'
 import { cn } from './lib/utils'
 import { formatBrlFromCents, parseBrlToCents } from './lib/money'
+import { decodeShareStateV1, encodeShareStateV1 } from './lib/shareLink'
 import {
   computeConsumptionGroups,
   computePairwiseTransfers,
@@ -166,9 +167,32 @@ export default function App() {
   const [editingEConsumers, setEditingEConsumers] = useState<Record<string, boolean>>({})
   const [shareOpen, setShareOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
   const [expensesCopied, setExpensesCopied] = useState(false)
 
   const canShare = expenses.length > 0 && (balances.some((b) => b.netCents !== 0) || totalPartyCents > 0)
+
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const token = url.searchParams.get('s')
+    if (!token) return
+    const decoded = decodeShareStateV1(token)
+    if (!decoded) return
+    const apply = () => {
+      useChurrasStore.setState({ participants: decoded.participants, expenses: decoded.expenses })
+      setTab('settlement')
+    }
+    const p = (useChurrasStore as typeof useChurrasStore & { persist?: any }).persist
+    if (p?.hasHydrated?.()) {
+      apply()
+      return
+    }
+    if (p?.onFinishHydration) {
+      p.onFinishHydration(apply)
+      return
+    }
+    apply()
+  }, [])
 
   function toggleConsumer(id: string) {
     setEConsumers((prev) => ({ ...prev, [id]: !prev[id] }))
@@ -221,6 +245,13 @@ export default function App() {
   function openWhatsapp(text: string) {
     const url = `https://wa.me/?text=${encodeURIComponent(text)}`
     window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  function buildShareUrl() {
+    const url = new URL(window.location.href)
+    const token = encodeShareStateV1({ participants, expenses })
+    url.searchParams.set('s', token)
+    return url.toString()
   }
 
   return (
@@ -948,6 +979,19 @@ export default function App() {
                   className="min-h-48 w-full resize-none rounded-md border border-slate-200 bg-white p-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
                 />
                 <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      const link = buildShareUrl()
+                      void copyToClipboard(link)
+                      setLinkCopied(true)
+                      window.setTimeout(() => setLinkCopied(false), 1200)
+                    }}
+                    disabled={participants.length === 0 || expenses.length === 0}
+                  >
+                    {linkCopied ? 'Link copiado' : 'Copiar link'}
+                  </Button>
                   <Button type="button" onClick={() => copyToClipboard(shareMessage)}>
                     {copied ? 'Copiado' : 'Copiar'}
                   </Button>
