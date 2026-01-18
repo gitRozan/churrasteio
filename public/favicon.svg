@@ -1,16 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
   <defs>
-    <linearGradient id="g" x1="34" y1="30" x2="230" y2="234" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg" x1="34" y1="30" x2="230" y2="234" gradientUnits="userSpaceOnUse">
       <stop stop-color="#0f172a"/>
       <stop offset="1" stop-color="#111827"/>
     </linearGradient>
+    <linearGradient id="beer" x1="78" y1="88" x2="174" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
   </defs>
-  <rect x="24" y="24" width="208" height="208" rx="48" fill="url(#g)"/>
+
+  <rect x="24" y="24" width="208" height="208" rx="48" fill="url(#bg)"/>
   <rect x="24" y="24" width="208" height="208" rx="48" stroke="#0b1220" stroke-width="8"/>
-  <g stroke="#ffffff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M84 92h88"/>
-    <path d="M84 164h88"/>
-    <path d="M96 92c0 40 24 72 32 72s32-32 32-72"/>
+
+  <g>
+    <rect x="76" y="96" width="92" height="104" rx="18" fill="url(#beer)" stroke="#ffffff" stroke-opacity="0.85" stroke-width="8"/>
+    <path
+      d="M168 114h14c12 0 22 10 22 22s-10 22-22 22h-14"
+      stroke="#ffffff"
+      stroke-opacity="0.85"
+      stroke-width="10"
+      stroke-linecap="round"
+      fill="none"
+    />
+    <rect x="76" y="84" width="92" height="26" rx="13" fill="#ffffff" fill-opacity="0.92"/>
+    <path d="M84 84c10-14 18-18 28-18s18 4 28 18" stroke="#ffffff" stroke-opacity="0.92" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M138 84c10-14 18-18 28-18s18 4 28 18" stroke="#ffffff" stroke-opacity="0.92" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M96 118v62" stroke="#ffffff" stroke-opacity="0.45" stroke-width="8" stroke-linecap="round"/>
+    <path d="M118 118v62" stroke="#ffffff" stroke-opacity="0.30" stroke-width="8" stroke-linecap="round"/>
   </g>
 </svg>
 

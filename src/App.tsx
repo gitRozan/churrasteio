@@ -12,6 +12,7 @@ import { Button } from './components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card'
 import { Input } from './components/ui/input'
 import { Label } from './components/ui/label'
+import { AddToHomeScreenBanner } from './components/AddToHomeScreenBanner'
 import { cn } from './lib/utils'
 import { formatBrlFromCents, parseBrlToCents } from './lib/money'
 import { decodeShareStateV1, encodeShareStateV1 } from './lib/shareLink'
@@ -33,10 +34,10 @@ function buildWhatsappMessage(
   const byId = new Map(balances.map((b) => [b.participant.id, b.participant] as const))
 
   const lines: string[] = []
-  lines.push('\u{1F969} *Resumo do Churrasteio* \u{1F37A}')
+  lines.push('*Resumo do Churrasteio*')
   lines.push(`Total da Festa: ${formatBrlFromCents(totalPartyCents)}`)
   lines.push('----------------')
-  lines.push('\u{1F4B8} *Quem manda pra quem:*')
+  lines.push('*Quem manda pra quem:*')
   if (pairwiseTransfers.length === 0) {
     lines.push('- Ninguém')
   } else {
@@ -61,7 +62,7 @@ function buildWhatsappMessage(
   if (consumptionGroups.length > 0) {
     lines.push('')
     lines.push('----------------')
-    lines.push('\u{1F4CC} *Detalhado por consumo:*')
+    lines.push('*Detalhado por consumo:*')
     for (const g of consumptionGroups) {
       const items = g.itemNames.filter(Boolean).join(', ')
       lines.push('')
@@ -295,6 +296,8 @@ export default function App() {
             Acerto
           </Button>
         </nav>
+
+        <AddToHomeScreenBanner />
 
         {tab === 'participants' && (
           <div className="flex flex-col gap-4">
