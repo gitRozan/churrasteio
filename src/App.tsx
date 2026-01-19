@@ -181,6 +181,12 @@ export default function App() {
 
   const canShare = expenses.length > 0 && (balances.some((b) => b.netCents !== 0) || totalPartyCents > 0)
 
+  function openShareFlow() {
+    if (!canShare) return
+    setTab('settlement')
+    setShareOpen(true)
+  }
+
   useEffect(() => {
     const url = new URL(window.location.href)
     const token = url.searchParams.get('s')
@@ -949,16 +955,28 @@ export default function App() {
             </Card>
           </div>
         )}
+
+        <Card className={cn(!canShare && 'opacity-60')}>
+          <CardContent className="grid gap-2 p-4">
+            <div className="text-sm font-semibold">Finalizar</div>
+            <div className="text-xs text-slate-600">
+              {expenses.length === 0
+                ? 'Adicione pelo menos uma despesa para liberar o link da simulação.'
+                : 'Abra o acerto e compartilhe um link com tudo preenchido.'}
+            </div>
+            <Button type="button" className="w-full" onClick={openShareFlow} disabled={!canShare}>
+              <Share2 className="h-4 w-4" />
+              Finalizar e compartilhar
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="fixed bottom-4 left-0 right-0 mx-auto flex w-full max-w-3xl justify-end px-4">
         <Button
           className={cn('h-12 w-12 rounded-full shadow-lg', !canShare && 'opacity-50')}
           size="icon"
-          onClick={() => {
-            if (!canShare) return
-            setShareOpen(true)
-          }}
+          onClick={openShareFlow}
           aria-label="Compartilhar"
         >
           <Share2 className="h-5 w-5" />
