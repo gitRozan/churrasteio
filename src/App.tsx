@@ -151,6 +151,14 @@ export default function App() {
     [totalPartyCents, balances, pairwiseTransfers, consumptionGroups],
   )
 
+  const shareUrl = useMemo(() => {
+    if (participants.length === 0 || expenses.length === 0) return ''
+    const url = new URL(window.location.href)
+    const token = encodeShareStateV1({ participants, expenses })
+    url.searchParams.set('s', token)
+    return url.toString()
+  }, [participants, expenses])
+
   const [pName, setPName] = useState('')
   const [pPix, setPPix] = useState('')
   const [editingParticipantId, setEditingParticipantId] = useState<string | null>(null)
@@ -246,13 +254,6 @@ export default function App() {
   function openWhatsapp(text: string) {
     const url = `https://wa.me/?text=${encodeURIComponent(text)}`
     window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
-  function buildShareUrl() {
-    const url = new URL(window.location.href)
-    const token = encodeShareStateV1({ participants, expenses })
-    url.searchParams.set('s', token)
-    return url.toString()
   }
 
   return (
@@ -958,7 +959,7 @@ export default function App() {
             if (!canShare) return
             setShareOpen(true)
           }}
-          aria-label="Compartilhar no Zap"
+          aria-label="Compartilhar"
         >
           <Share2 className="h-5 w-5" />
         </Button>
@@ -973,36 +974,74 @@ export default function App() {
           <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-3xl p-4">
             <Card className="shadow-xl">
               <CardHeader>
-                <CardTitle>Compartilhar no WhatsApp</CardTitle>
+                <CardTitle>Compartilhar simulação</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3">
+                <div className="text-sm text-slate-600">
+                  O link abre o app com participantes e despesas já preenchidos.
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="shareLink">Link da simulação</Label>
+                  <Input
+                    id="shareLink"
+                    readOnly
+                    value={shareUrl}
+                    onFocus={(e) => e.currentTarget.select()}
+                  />
+                  <div className="text-xs text-slate-500">
+                    Quem receber pode conferir os valores e o acerto exatamente como você montou.
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (!shareUrl) return
+                      void copyToClipboard(shareUrl)
+                      setLinkCopied(true)
+                      window.setTimeout(() => setLinkCopied(false), 1200)
+                    }}
+                    disabled={!shareUrl}
+                  >
+                    {linkCopied ? 'Link copiado' : 'Copiar link da simulação'}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      if (!shareUrl) return
+                      openWhatsapp(shareUrl)
+                    }}
+                    disabled={!shareUrl}
+                  >
+                    Enviar link no WhatsApp
+                  </Button>
+                  <Button type="button" variant="ghost" onClick={() => setShareOpen(false)}>
+                    Fechar
+                  </Button>
+                </div>
+
+                <div className="h-px w-full bg-slate-200" />
+
+                <div className="grid gap-2">
+                  <div className="text-sm font-semibold">Resumo (opcional)</div>
+                  <div className="text-xs text-slate-600">
+                    Se preferir, você também pode enviar o texto do acerto.
+                  </div>
+                </div>
                 <textarea
                   readOnly
                   value={shareMessage}
                   className="min-h-48 w-full resize-none rounded-md border border-slate-200 bg-white p-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
                 />
                 <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      const link = buildShareUrl()
-                      void copyToClipboard(link)
-                      setLinkCopied(true)
-                      window.setTimeout(() => setLinkCopied(false), 1200)
-                    }}
-                    disabled={participants.length === 0 || expenses.length === 0}
-                  >
-                    {linkCopied ? 'Link copiado' : 'Copiar link'}
-                  </Button>
                   <Button type="button" onClick={() => copyToClipboard(shareMessage)}>
-                    {copied ? 'Copiado' : 'Copiar'}
+                    {copied ? 'Copiado' : 'Copiar resumo'}
                   </Button>
                   <Button type="button" variant="secondary" onClick={() => openWhatsapp(shareMessage)}>
-                    Abrir WhatsApp
-                  </Button>
-                  <Button type="button" variant="ghost" onClick={() => setShareOpen(false)}>
-                    Fechar
+                    Enviar resumo no WhatsApp
                   </Button>
                 </div>
               </CardContent>
